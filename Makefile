@@ -4,7 +4,7 @@ FRAMES=./frames
 OUTPUT=./output
 
 .PHONY : all
-all: render | animate
+all: clean render | animate
 
 .PHONY : clean
 clean: 
