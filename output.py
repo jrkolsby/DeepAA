@@ -7,13 +7,19 @@ import pandas as pd
 from PIL import Image
 import pickle
 import os
+import sys
 
+print(sys.argv)
+
+if (len(sys.argv) < 5):
+    print("Usage: output.py <input filename> <output directory> <iterations> <output width in px>")
+    quit()
 
 # parameters
 model_path = "model/model.json" # or "model/model_light.json"
 weight_path = "model/weight.hdf5" # or "model/weight_light.json"
-image_path = 'sample images/original images/21 original.png' # put the path of the image that you convert.
-new_width = 0 # adjust the width of the image. the original width is used if new_width = 0.
+image_path = sys.argv[1] # put the path of the image that you convert.
+new_width = int(sys.argv[4]) # adjust the width of the image. the original width is used if new_width = 0.
 input_shape = [64, 64, 1]
 
 
@@ -43,7 +49,7 @@ char_list = pd.read_csv(char_list_path, encoding="cp932")
 print("len(char_list)", len(char_list))
 # print(char_list.head())
 char_list = char_list[char_list['frequency']>=10]
-char_list = char_list['char'].as_matrix()
+char_list = char_list['char'].values
 
 for k, v in enumerate(char_list):
     if v==" ":
@@ -72,11 +78,11 @@ char_dict = pickleload(char_dict_path)
 
 print("len(char_dict)", len(char_dict))
 
-output_dir = "output/"
+output_dir = sys.argv[2] + '/'
 if not os.path.isdir(output_dir):
     os.makedirs(output_dir)
 
-for slide in range(18):
+for slide in range(int(sys.argv[3]) + 1):
     print("converting:", slide)
     num_line = (img.shape[0] - input_shape[0]) // 18
     img_width = img.shape[1]
@@ -118,9 +124,9 @@ for slide in range(18):
 
     img_aa = Image.fromarray(img_aa)
     img_aa = img_aa.crop([0,slide,new_width, new_height+slide])
-    save_path = output_dir + os.path.basename(image_path)[:-4] + '_'\
-                + 'w' + str(new_width) \
-                + '_slide' + str(slide) + '.png'
+    save_path = output_dir + os.path.basename(image_path)[:-4] + '_' \
+                + 'w' + str(new_width) + '_' \
+                + 'slide' + str(slide) + '.png'
     img_aa.save(save_path)
 
     f=open(save_path[:-4] + '.txt', 'w')
