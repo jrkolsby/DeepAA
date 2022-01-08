@@ -4,15 +4,19 @@ FRAMES=./frames
 OUTPUT=./output
 
 .PHONY : all
-all: clean animate
+all: clean frames animate
 
-.PHONY : clean
-clean: 
-	rm -rf $(OUTPUT)/*
+.PHONY : cleanframes
+cleanframes:
+	rm -rf $(FRAMES)/*
 
 .PHONY : frames
 frames : 
 	ffmpeg -i ./input.gif -vsync 0 $(FRAMES)/%3d.png
+
+.PHONY : clean
+clean: 
+	rm -rf $(OUTPUT)/*
 
 .PHONY : render
 render: 
@@ -22,7 +26,7 @@ render:
     	done
 
 .PHONY : animate
-animate: render
+animate: 
 	for (( c=0; c<=$(SLIDES); c++ )); do \
 		SLIDEDIR="$(OUTPUT)/slide_$$c"; \
 		mkdir $$SLIDEDIR; \
